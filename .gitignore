@@ -14,3 +14,9 @@ client/.env
 # Vercel
 .vercel
 server/uploads/
+
+uploads/
+*.zip
+*.mp4
+*.pdf
+.env
