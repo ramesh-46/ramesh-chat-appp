@@ -1,0 +1,15 @@
+# Node.js
+node_modules/
+.env
+server/serviceAccount.json
+server/config/FirebaseAdmin.json
+
+# React
+client/node_modules/
+client/.env
+
+# Logs
+*.log
+
+# Vercel
+.vercel
