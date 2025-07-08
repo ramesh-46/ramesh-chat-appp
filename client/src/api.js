@@ -105,9 +105,11 @@ export const recoverUsername = email => api.get("/auth/recover/username", { para
 export const recoverEmail = uname => api.get("/auth/recover/email", { params: { username: uname } });
 
 export const updateProfile = (userId, data) => api.put(`/profile/${userId}`, data);
+const BASE_URL = "https://ramesh-chat-appp.onrender.com";
 
-const BASE = "http://localhost:4000/api";
+// const BASE = "http://localhost:4000/api";
 
+const BASE = `${BASE_URL}/api`;
 export const fetchGroups = async userId =>
   await axios.get(`${BASE}/groups/${userId}`);
 

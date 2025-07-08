@@ -190,7 +190,10 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { io } from "socket.io-client";
 
 export function useCall(userId) {
-  const socket = useRef(io("http://localhost:4000"));
+
+  const BASE_URL = "https://ramesh-chat-appp.onrender.com";
+const socket = useRef(io(BASE_URL, { transports: ['websocket'] }));
+  // const socket = useRef(io("http://localhost:4000"));
   const pc = useRef(null);
   const localStream = useRef(null);
   const remoteStream = useRef(null);

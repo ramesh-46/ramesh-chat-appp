@@ -87,8 +87,10 @@ import ChatList    from "./Chat/ChatList";
 import ChatWindow  from "./Chat/ChatWindow";
 import Navbar      from "./Navbar";
 import ProfilePanel from "./Accounts/ProfilePanel";
+const BASE_URL = "https://ramesh-chat-appp.onrender.com";
 
-const socket = io("http://localhost:4000");   // backend port
+const socket = useRef(io(BASE_URL, { transports: ['websocket'] }));
+// const socket = io("http://localhost:4000");   // backend port
 
 /* ---------- tiny helper ---------- */
 const useIsMobile = () => {

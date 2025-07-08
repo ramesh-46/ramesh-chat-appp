@@ -1729,9 +1729,11 @@ export default function ChatWindow({ peer, socket, onBack = () => {} }) {
       console.error("Error unblocking user:", error);
     }
   };
+const BASE_URL = "https://ramesh-chat-appp.onrender.com";
 
-  const fileURL = (p) => `http://localhost:4000${p}`;
+  // const fileURL = (p) => `http://localhost:4000${p}`;
 
+const fileURL = (p) => `${BASE_URL}${p}`;
   const handleLongPress = (id) => {
     setMsgs((prev) =>
       prev.map((msg) => (msg._id === id ? { ...msg, marked: !msg.marked } : msg))
