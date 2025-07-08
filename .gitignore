@@ -13,3 +13,4 @@ client/.env
 
 # Vercel
 .vercel
+server/uploads/
