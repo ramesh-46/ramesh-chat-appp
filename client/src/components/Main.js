@@ -75,7 +75,130 @@
 
 
 
-import React, { useState, useContext, useEffect } from "react";
+// import React, { useState, useContext, useEffect } from "react";
+// import io from "socket.io-client";
+// import { AnimatePresence } from "framer-motion";
+
+// import { AuthContext } from "../contexts/AuthContext";
+// import { ThemeContext } from "../contexts/ThemeContext";
+
+// import SearchBar   from "./SearchBar";
+// import ChatList    from "./Chat/ChatList";
+// import ChatWindow  from "./Chat/ChatWindow";
+// import Navbar      from "./Navbar";
+// import ProfilePanel from "./Accounts/ProfilePanel";
+// const BASE_URL = "https://ramesh-chat-appp.onrender.com";
+
+// const socket = useRef(io(BASE_URL, { transports: ['websocket'] }));
+// // const socket = io("http://localhost:4000");   // backend port
+
+// /* ---------- tiny helper ---------- */
+// const useIsMobile = () => {
+//   const [m, setM] = useState(window.innerWidth <= 768);
+//   useEffect(() => {
+//     const h = () => setM(window.innerWidth <= 768);
+//     window.addEventListener("resize", h);
+//     return () => window.removeEventListener("resize", h);
+//   }, []);
+//   return m;
+// };
+
+// export default function Main() {
+//   const { user, logout } = useContext(AuthContext);
+//   const { theme } = useContext(ThemeContext);
+
+//   const [current, setCurrent]   = useState(null);     // selected peer
+//   const [showProfile, setShowProfile] = useState(false);
+//   const isMobile = useIsMobile();
+
+//   /* join personal room once */
+//   useEffect(() => { socket.emit("join", user.userId); }, [user]);
+
+//   /* desktop notifications */
+//   useEffect(() => {
+//     if (Notification.permission === "default") Notification.requestPermission();
+//     const notif = (m) => {
+//       if (document.hidden && Notification.permission === "granted" && m.sender !== user.userId) {
+//         new Notification("New message", { body: m.text || "Image 📷" });
+//       }
+//     };
+//     socket.on("receiveMessage", notif);
+//     return () => socket.off("receiveMessage", notif);
+//   }, [socket, user]);
+
+//   /* -------- UI -------- */
+//   return (
+//     <div style={S.wrap}>
+
+//       {/* Hide Navbar only on mobile *inside* a chat */}
+//       {(!isMobile || !current) && (
+//         <Navbar logout={logout} onProfile={() => setShowProfile(true)} />
+//       )}
+
+//       {/* Hide SearchBar on mobile while chatting */}
+//       {(!isMobile || !current) && (
+//         <SearchBar onFound={setCurrent} />
+//       )}
+
+//       <div style={S.body}>
+//         <ChatList
+//           current={current}
+//           onPick={setCurrent}
+//           socket={socket}
+//         />
+
+//         {current ? (
+//           <ChatWindow
+//             peer={current}
+//             socket={socket}
+//             onBack={() => setCurrent(null)}   // ← back-arrow handler
+//           />
+//         ) : (
+//           <div style={S.welcome}>
+//             Select or search a contact to start chatting ✨
+//           </div>
+//         )}
+//       </div>
+
+//       {/* profile slide-in */}
+//       <AnimatePresence>
+//         {showProfile && (
+//           <ProfilePanel
+//             onClose={() => setShowProfile(false)}
+//           />
+//         )}
+//       </AnimatePresence>
+//     </div>
+//   );
+// }
+
+// /* --------------- theme-aware, responsive styles --------------- */
+// const S = {
+//   wrap: {
+//     height: "98vh",
+//     display: "flex",
+//     flexDirection: "column",
+//     background: "var(--primarySoft)",
+//     fontFamily: "var(--font-ui)",
+//     color: "var(--textMain)",
+//   },
+//   body: {
+//     flex: 1,
+//     display: "flex",
+//     minHeight: 0,            // allow children to scroll
+//   },
+//   welcome: {
+//     flex: 1,
+//     display: "flex",
+//     alignItems: "center",
+//     justifyContent: "center",
+//     color: "var(--textLight)",
+//     fontSize: "clamp(1.1rem, 3vw, 1.4rem)",
+//     padding: 20,
+//     textAlign: "center",
+//   },
+// };
+import React, { useState, useContext, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import { AnimatePresence } from "framer-motion";
 
@@ -87,10 +210,8 @@ import ChatList    from "./Chat/ChatList";
 import ChatWindow  from "./Chat/ChatWindow";
 import Navbar      from "./Navbar";
 import ProfilePanel from "./Accounts/ProfilePanel";
-const BASE_URL = "https://ramesh-chat-appp.onrender.com";
 
-const socket = useRef(io(BASE_URL, { transports: ['websocket'] }));
-// const socket = io("http://localhost:4000");   // backend port
+const BASE_URL = "https://ramesh-chat-appp.onrender.com";
 
 /* ---------- tiny helper ---------- */
 const useIsMobile = () => {
@@ -107,12 +228,16 @@ export default function Main() {
   const { user, logout } = useContext(AuthContext);
   const { theme } = useContext(ThemeContext);
 
+  const socket = useRef(io(BASE_URL, { transports: ['websocket'] }));
+
   const [current, setCurrent]   = useState(null);     // selected peer
   const [showProfile, setShowProfile] = useState(false);
   const isMobile = useIsMobile();
 
   /* join personal room once */
-  useEffect(() => { socket.emit("join", user.userId); }, [user]);
+  useEffect(() => {
+    socket.current.emit("join", user.userId);
+  }, [user]);
 
   /* desktop notifications */
   useEffect(() => {
@@ -122,20 +247,17 @@ export default function Main() {
         new Notification("New message", { body: m.text || "Image 📷" });
       }
     };
-    socket.on("receiveMessage", notif);
-    return () => socket.off("receiveMessage", notif);
-  }, [socket, user]);
+    socket.current.on("receiveMessage", notif);
+    return () => socket.current.off("receiveMessage", notif);
+  }, [user]);
 
-  /* -------- UI -------- */
   return (
     <div style={S.wrap}>
 
-      {/* Hide Navbar only on mobile *inside* a chat */}
       {(!isMobile || !current) && (
         <Navbar logout={logout} onProfile={() => setShowProfile(true)} />
       )}
 
-      {/* Hide SearchBar on mobile while chatting */}
       {(!isMobile || !current) && (
         <SearchBar onFound={setCurrent} />
       )}
@@ -144,14 +266,14 @@ export default function Main() {
         <ChatList
           current={current}
           onPick={setCurrent}
-          socket={socket}
+          socket={socket.current}
         />
 
         {current ? (
           <ChatWindow
             peer={current}
-            socket={socket}
-            onBack={() => setCurrent(null)}   // ← back-arrow handler
+            socket={socket.current}
+            onBack={() => setCurrent(null)}
           />
         ) : (
           <div style={S.welcome}>
@@ -160,12 +282,9 @@ export default function Main() {
         )}
       </div>
 
-      {/* profile slide-in */}
       <AnimatePresence>
         {showProfile && (
-          <ProfilePanel
-            onClose={() => setShowProfile(false)}
-          />
+          <ProfilePanel onClose={() => setShowProfile(false)} />
         )}
       </AnimatePresence>
     </div>
@@ -185,7 +304,7 @@ const S = {
   body: {
     flex: 1,
     display: "flex",
-    minHeight: 0,            // allow children to scroll
+    minHeight: 0,
   },
   welcome: {
     flex: 1,
