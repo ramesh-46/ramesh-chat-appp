@@ -30,6 +30,8 @@ export default function App() {
   return (
     <>
       <Routes>
+        <Route path="/manifest.json" />
+
         {/* Home  →  chat if logged‑in, otherwise go to login */}
         <Route path="/" element={user ? <Main /> : <Navigate to="/login" />} />
 
